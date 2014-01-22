@@ -1,0 +1,42 @@
+# running/logging time
+nupdates = 1000000
+walltime = None
+
+compute_nll::smlpt.tools.HyperParamIterator
+compute_nll.vals = 1e4
+log_interval::smlpt.tools.HyperParamIterator
+log_interval.vals = 1e4
+
+### optimization parameters ###
+
+# fixed learning rate
+lr::smlpt.tools.DelayedOneOverT
+lr.lr0 = 1e-3
+lr.start = None
+
+k = 1
+l1 = 0.0
+l2 = 0.0
+momentum::smlpt.tools.HyperParamIterator
+momentum.vals = 0.0
+train_burnin = 0
+
+# beta adapation
+adapt_beta = 1
+beta_lr = 1e-4
+
+# chain spawning
+spawn_beta = 1
+n_burnin = 1e3
+min_p_acc = 0.4
+spawn_type = spawn_avg
+spawn_rtime_multiplier = 1.
+
+# waste reduction
+waste_cutoff = 1e-3
+
+# AIS config
+ais_runs = 100
+
+# other
+init_bias_to_mean=0

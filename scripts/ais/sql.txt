@@ -1,0 +1,111 @@
+>> 
+select 
+    rbm_nbeta, lr_lr0, betalr, l2, momentum_vals, rbm_batchsize, rbm_tbatchsize, rbm_betalbound, minpacc, avg(best_seed.tstamps), avg(best_seed.validnlls) as avgscore
+from 
+    (select 
+        data.id, rbm_nbeta, lr_lr0, l2, momentum_vals, rbm_tbatchsize, 
+        rbm_batchsize, rbm_betalbound, minpacc, betalr, 
+        data.tstamps as tstamps, data.validnlls as validnlls
+    from
+        smlpt_caltech2_view as c,
+        (select
+            id,
+            cast(regexp_split_to_table(tstamps, ':') as float8) as tstamps,
+            cast(regexp_split_to_table(validnlls, ':') as float8) as validnlls
+         from smlpt_caltech2_view where tstamps!='' and validnlls!='') as data, 
+        (select
+            z.id as id, max(z.validnlls) as score
+        from
+            (select
+                id,
+                cast(regexp_split_to_table(tstamps, ':') as float8) as tstamps,
+                cast(regexp_split_to_table(validnlls, ':') as float8) as validnlls
+             from smlpt_caltech2_view where tstamps!='' and validnlls!='') as z
+        where 
+             z.tstamps <= 2*3600
+        group by z.id) as maxtable
+    where 
+        data.validnlls=maxtable.score and
+        data.id=maxtable.id and 
+        c.id=maxtable.id) as best_seed
+group by 
+    rbm_nbeta, lr_lr0, l2, momentum_vals, rbm_tbatchsize, rbm_batchsize, rbm_betalbound, minpacc, betalr
+order by 
+    avgscore desc;
+
+
+select 
+    rbm_nbeta, lr_lr0, logz, logzupper, logzstd, avg(best_seed.validnlls) as avgscore
+from 
+    (select 
+        data.id, rbm_nbeta, lr_lr0, l2, momentum_vals, rbm_tbatchsize, 
+        rbm_batchsize, rbm_betalbound, minpacc, betalr, 
+        data.tstamps as tstamps, data.validnlls as validnlls, logzstd,
+        logz, logzupper
+    from
+        smlpt_caltech2_view as c,
+        (select
+            id,
+            cast(regexp_split_to_table(tstamps, ':') as float8) as tstamps,
+            cast(regexp_split_to_table(validnlls, ':') as float8) as validnlls
+         from smlpt_caltech2_view where tstamps!='' and validnlls!='') as data, 
+        (select
+            z.id as id, max(z.validnlls) as score
+        from
+            (select
+                id,
+                cast(regexp_split_to_table(tstamps, ':') as float8) as tstamps,
+                cast(regexp_split_to_table(validnlls, ':') as float8) as validnlls
+             from smlpt_caltech2_view where tstamps!='' and validnlls!='') as z
+        where 
+             z.tstamps <= 2*3600
+        group by z.id) as maxtable
+    where 
+        data.validnlls=maxtable.score and
+        data.id=maxtable.id and 
+        c.id=maxtable.id) as best_seed
+group by 
+    rbm_nbeta, lr_lr0, l2, momentum_vals, rbm_tbatchsize, rbm_batchsize, rbm_betalbound, minpacc, betalr, logzstd, logz, logzupper
+order by 
+    avgscore desc;
+
+
+
+select 
+    rbm_nbeta, lr_lr0, avg(avgscore), stddev(avgscore)
+from
+    (select 
+        rbm_nbeta, lr_lr0, betalr, l2, momentum_vals, rbm_batchsize, rbm_tbatchsize, rbm_betalbound, minpacc, avg(best_seed.validnlls) as avgscore
+     from 
+        (select 
+            data.id, rbm_nbeta, lr_lr0, l2, momentum_vals, rbm_tbatchsize, 
+            rbm_batchsize, rbm_betalbound, minpacc, betalr, 
+            data.tstamps as tstamps, data.validnlls as validnlls
+        from
+            smlpt_caltech2_view as c,
+            (select
+                id,
+                cast(regexp_split_to_table(tstamps, ':') as float8) as tstamps,
+                cast(regexp_split_to_table(validnlls, ':') as float8) as validnlls
+             from smlpt_caltech2_view where tstamps!='' and validnlls!='') as data, 
+            (select
+                z.id as id, max(z.validnlls) as score
+            from
+                (select
+                    id,
+                    cast(regexp_split_to_table(tstamps, ':') as float8) as tstamps,
+                    cast(regexp_split_to_table(validnlls, ':') as float8) as validnlls
+                 from smlpt_caltech2_view where tstamps!='' and validnlls!='') as z
+            where 
+                 z.tstamps <= 2*3600
+            group by z.id) as maxtable
+        where 
+            data.validnlls=maxtable.score and
+            data.id=maxtable.id and 
+            c.id=maxtable.id) as best_seed
+    group by 
+        rbm_nbeta, lr_lr0, l2, momentum_vals, rbm_tbatchsize, rbm_batchsize, rbm_betalbound, minpacc, betalr) as zzz
+group by
+    rbm_nbeta, lr_lr0
+order by
+    avg(avgscore)

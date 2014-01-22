@@ -1,0 +1,3 @@
+dataset::pylearn.datasets.nist_digits.train_valid_test
+
+rbm.n_visible = 32*32

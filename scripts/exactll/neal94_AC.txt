@@ -1,0 +1,6 @@
+dataset::pylearn.datasets.test_modes.neal94_AC
+dataset.p=0.001
+dataset.size=10000
+dataset.seed=238904
+
+rbm.n_visible = 16

@@ -1,0 +1,15 @@
+rbm::@smlpt.tempered_rbm.RBM(n_visible=%n_visible, n_hidden=%n_hidden, n_beta=%n_beta, batch_size=%batch_size, beta_lbound=%beta_lbound, n_pass=%n_pass, W=%W, hbias=%hbias, vbias=%vbias, numpy_rng=%numpy_rng, theano_rng=%theano_rng)
+
+rbm.n_visible = 16
+rbm.n_hidden = 10
+rbm.n_beta = 1
+rbm.batch_size = 10
+rbm.beta_lbound = 0
+rbm.n_pass = 5
+
+rbm.W = None
+rbm.vbias = None
+rbm.hbias = None
+rbm.theano_rng = None
+rbm.numpy_rng::@numpy.random.RandomState(seed=%seed)
+rbm.numpy_rng.seed = 123

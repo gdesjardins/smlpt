@@ -1,0 +1,6 @@
+dataset::pylearn.datasets.test_modes.OnlineModes
+dataset.n_modes=5
+dataset.img_shape=(28,28)
+dataset.seed=238902
+
+rbm.n_visible = 28*28

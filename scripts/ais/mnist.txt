@@ -1,0 +1,3 @@
+dataset::pylearn.datasets.MNIST.train_valid_test
+
+rbm.n_visible = 28*28

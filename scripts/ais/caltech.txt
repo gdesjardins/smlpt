@@ -1,0 +1,3 @@
+dataset::pylearn.datasets.caltech.caltech_silhouette
+
+rbm.n_visible = 28*28

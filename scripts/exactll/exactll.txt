@@ -1,0 +1,5 @@
+nupdates = 100000
+compute_ll = 1000
+init_bias_to_mean=1
+k = 1
+lr = 0.001

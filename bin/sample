@@ -1,0 +1,67 @@
+#!/usr/bin/python
+import os
+
+import pylab as pl
+import numpy
+import theano
+
+from smlpt import tempered_rbm
+from smlpt.utils import plotmat
+from jobman import parse, DD
+
+# parse command line arguments
+state = DD(parse.standard(*os.sys.argv[1:]))
+n_samples = state.get('n_samples', 100)
+k = state.get('k',1)
+grid_shape = state.get('grid_shape',(10,10))
+ofname = state.get('output', 'samples.pdf')
+burnin = state.get('burnin',0)
+beta_lr = state.get('beta_lr',1e-3)
+
+assert state.has_key('model')
+assert state.has_key('img_shape')
+assert isinstance(state.img_shape, tuple)
+
+
+grid_size = numpy.prod(grid_shape)
+img_size = numpy.prod(state.img_shape)
+
+rbm = tempered_rbm.RBM.build_from_file(state.model)
+
+# define PT sampling function
+samples, sampling_updates = rbm.get_sampling_updates(k=1)
+sample_rbm = theano.function([], [], updates=sampling_updates)
+samples = numpy.zeros((rbm.batch_size, n_samples, img_size))
+
+prefix = os.tmpnam()
+
+print 'Burn-in period: ' 
+rbm.config_beta_updates()
+for i in range(burnin):
+    sample_rbm()
+    # when using SML-PT, adapt beta during burn-in
+    if rbm.n_beta.value > 1:
+        rbm.grad_update_betas(beta_lr)
+    
+    if i%10 == 0: print '%i '%i
+print 'done.'
+
+print 'Generating samples...'
+for i in range(n_samples):
+
+    sample_rbm()
+
+    nvis = rbm.mf_buffer.value[:rbm.batch_size]
+    for bi in range(rbm.batch_size):
+        samples[bi,i,:] = nvis[bi,:]
+
+    if i%10 == 0: print '%i '%i 
+print 'done.'
+
+for bi in range(rbm.batch_size):
+    plotmat.plotmat(samples[bi], state.img_shape, 
+                    fname='%s_samples_batch%i'%(prefix,bi), 
+                    title='Batch %i'%bi)
+
+os.system('pdfjoin %s %s_samples_batch*' % (ofname, prefix))
+os.system('rm %s' % prefix+'_*')

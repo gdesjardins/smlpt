@@ -1,0 +1,17 @@
+rbm::smlpt.tempered_rbm.RBM
+
+rbm.n_visible = 784
+rbm.n_hidden = 2000
+rbm.n_beta = 10
+rbm.t_batch_size = 1
+rbm.batch_size = 10
+rbm.beta_lbound = 0
+
+rbm.W = None
+rbm.vbias = None
+rbm.hbias = None
+rbm.theano_rng = None
+rbm.seed = 123
+
+# beta adapation
+rbm.tau=None
